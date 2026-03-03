@@ -7,7 +7,7 @@ https://github.com/MikaSukie/Bhumi
 (I try constantly to learn programming. I started by using tools to make a compiler, then I try learning using my compiler.)
 I am doing my best to reduce my reliance on such tools. 
 I would say, manually designing each feature and implememnting them using the tools have been a very helpful resource.
-Anyway, here is my attempt to try saving digital privacy using the exact weapon they try using on us.
+Anyway, here is my attempt to try saving digital privacy using what I know.
 ## I hope it does turn out to be helpful. </br>
 
 Just a fair warning, This project intentionally implements the minimum possible interpretation of an OS-level age signal (so lawmakers can not assume that extra sensitive information is easy to implement as an update). </br>
