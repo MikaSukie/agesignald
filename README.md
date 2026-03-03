@@ -9,6 +9,12 @@ I am doing my best to reduce my reliance on such tools.
 I would say, manually designing each feature and implementing them using the tools have been a very helpful resource.
 Anyway, here is my attempt to try saving digital privacy using what I know.
 ## I hope it does turn out to be helpful. </br>
+## Or just honestly just ignore the law.
+Think about it. Who are they going to charge for lets say, Arch? </br>
+You can't charge every individual since most of them are not even in the jurisdiction of the US. </br>
+There is no central "provider" </br>
+
+## I made this for the central distrubutions like Elementary OS, PopOS, etc.
 
 Just a fair warning, This project intentionally implements the minimum possible interpretation of an OS-level age signal (so lawmakers can not assume that extra sensitive information is easy to implement as an update). </br>
 It stores only a locally computed age bracket (via localhost) and serves it to local apps. Nothing else. </br>
