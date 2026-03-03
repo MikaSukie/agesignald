@@ -11,7 +11,8 @@ Anyway, here is my attempt to try saving digital privacy using the exact weapon 
 ## I hope it does turn out to be helpful. </br>
 
 Just a fair warning, This project intentionally implements the minimum possible interpretation of an OS-level age signal (so lawmakers can not assume that extra sensitive information is easy to implement as an update). </br>
-It stores only a locally computed age bracket and serves it to local apps. Nothing else. </br>
+It stores only a locally computed age bracket (via localhost) and serves it to local apps. Nothing else. </br>
+
 ### The shipped release is a binary for x86-64 (will need manual .service creation). </br>
 
 ## Where are they stored?
@@ -57,13 +58,11 @@ curl "http://127.0.0.1:8080/get_age_signal?app=com.example.test"
 }
 ```
 
-## possible age brackets are the follwoing:
+The issued date will be stored in the ISO 8601 UTC format.
+## possible age brackets are the following:
 ```
 under_13
 13_to_15
 16_to_17
 18_plus
 ```
-
-## The issued date will be stored in the ISO 8601 UTC format.
-## Since the server is on localhost, this should protect it from outside access.
