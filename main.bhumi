@@ -1,0 +1,159 @@
+import inet;
+import C_std;
+
+fn json_status_ok_with_bracket(string bracket, string issued) <string> {
+    string r = sb_create();
+    r = sb_append_str(r, "{\"status\":\"ok\",\"age_bracket\":\"");
+    r = sb_append_str(r, bracket);
+    r = sb_append_str(r, "\",\"issued_at\":\"");
+    r = sb_append_str(r, issued);
+    r = sb_append_str(r, "\"}");
+    r = sb_finish(r);
+    return r;
+}
+
+fn json_signal(string bracket, string issued, string scope) <string> {
+    string r = sb_create();
+    r = sb_append_str(r, "{\"age_bracket\":\"");
+    r = sb_append_str(r, bracket);
+    r = sb_append_str(r, "\",\"issued_at\":\"");
+    r = sb_append_str(r, issued);
+    r = sb_append_str(r, "\",\"scope\":\"");
+    r = sb_append_str(r, scope);
+    r = sb_append_str(r, "\"}");
+    r = sb_finish(r);
+    return r;
+}
+
+pub fn run_server() <void> {
+    int port = 8080;
+    int backlog = 10;
+
+    int listen_fd = create_server(port, backlog);
+    if (listen_fd < 0) {
+        print("create_server failed"); newline();
+        return;
+    }
+    print("Started 'agesignald' on http://127.0.0.1:"); print(tostring(port)); newline();
+
+    while (true) {
+        int client = accept_client(listen_fd);
+        if (client < 0) {
+            continue;
+        }
+
+        string req = read_request_alloc(client);
+        if (streq(req, "")) {
+            if (!streq(req, "")) { free_str(req); }
+            close_fd(client);
+            continue;
+        }
+
+        string pathq = get_request_pathq_alloc(req);
+        if (streq(pathq, "")) {
+            send_response(client, "{\"error\":\"bad_request\"}");
+            if (!streq(req, "")) { free_str(req); }
+            if (!streq(pathq, "")) { free_str(pathq); }
+            close_fd(client);
+            continue;
+        }
+
+        if (streq(pathq, "/health") || streq(pathq, "/health/")) {
+            send_response(client, "{\"status\":\"ok\"}");
+            if (!streq(req, "")) { free_str(req); }
+            if (!streq(pathq, "")) { free_str(pathq); }
+            close_fd(client);
+            continue;
+        }
+
+        if (contains(pathq, "/set_age")) {
+            string birth = get_query_param_alloc(req, "birthdate");
+            if (streq(birth, "")) {
+                send_response(client, "{\"error\":\"missing_birthdate\"}");
+                if (!streq(req, "")) { free_str(req); }
+                if (!streq(pathq, "")) { free_str(pathq); }
+                if (!streq(birth, "")) { free_str(birth); }
+                close_fd(client);
+                continue;
+            }
+
+            string bracket = compute_age_bracket_alloc(birth);
+            if (streq(bracket, "")) {
+                send_response(client, "{\"error\":\"bad_birthdate\"}");
+                if (!streq(req, "")) { free_str(req); }
+                if (!streq(pathq, "")) { free_str(pathq); }
+                if (!streq(birth, "")) { free_str(birth); }
+                if (!streq(bracket, "")) { free_str(bracket); }
+                close_fd(client);
+                continue;
+            }
+
+            if (save_bracket_c(bracket) != 0) {
+                send_response(client, "{\"error\":\"save_failed\"}");
+                if (!streq(req, "")) { free_str(req); }
+                if (!streq(pathq, "")) { free_str(pathq); }
+                if (!streq(birth, "")) { free_str(birth); }
+                if (!streq(bracket, "")) { free_str(bracket); }
+                close_fd(client);
+                continue;
+            }
+
+            string issued = make_iso_utc_now_alloc();
+            string resp = json_status_ok_with_bracket(bracket, issued);
+            send_response(client, resp);
+
+            if (!streq(req, "")) { free_str(req); }
+            if (!streq(pathq, "")) { free_str(pathq); }
+            if (!streq(birth, "")) { free_str(birth); }
+            if (!streq(bracket, "")) { free_str(bracket); }
+            if (!streq(issued, "")) { free_str(issued); }
+
+            close_fd(client);
+            continue;
+        }
+
+        if (contains(pathq, "/get_age_signal")) {
+            string app = get_query_param_alloc(req, "app");
+            string scope;
+            if (streq(app, "")) {
+                scope = "default";
+            } else {
+                scope = app;
+            }
+
+            string bracket = load_bracket_alloc();
+            if (streq(bracket, "")) {
+                send_response(client, "{\"error\":\"no_age_set\"}");
+                if (!streq(req, "")) { free_str(req); }
+                if (!streq(pathq, "")) { free_str(pathq); }
+                if (!streq(app, "")) { free_str(app); }
+                if (!streq(bracket, "")) { free_str(bracket); }
+                close_fd(client);
+                continue;
+            }
+
+            string issued = make_iso_utc_now_alloc();
+            string resp = json_signal(bracket, issued, scope);
+            send_response(client, resp);
+
+            if (!streq(req, "")) { free_str(req); }
+            if (!streq(pathq, "")) { free_str(pathq); }
+            if (!streq(app, "")) { free_str(app); }
+            if (!streq(bracket, "")) { free_str(bracket); }
+            if (!streq(issued, "")) { free_str(issued); }
+
+            close_fd(client);
+            continue;
+        }
+
+        send_response(client, "{\"error\":\"not_found\"}");
+        if (!streq(req, "")) { free_str(req); }
+        if (!streq(pathq, "")) { free_str(pathq); }
+        close_fd(client);
+    }
+}
+
+pub fn main() <int> {
+    run_server();
+    return 0;
+}
