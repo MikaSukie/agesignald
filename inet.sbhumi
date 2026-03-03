@@ -1,0 +1,17 @@
+pub extern fn create_server(int port, int backlog)                      <int>;
+pub extern fn accept_client(int listen_fd)                              <int>;
+pub extern fn close_fd(int fd)                                          <int>;
+pub extern fn read_request_alloc(int client_fd)                         <string>;
+pub extern fn free_cstring(string s)                                    <void>;
+
+pub extern fn get_request_pathq_alloc(string request)                   <string>;
+pub extern fn get_query_param_alloc(string request, string key)         <string>;
+
+pub extern fn compute_age_bracket_alloc(string birth_iso)               <string>;
+
+pub extern fn save_bracket_c(string bracket)                            <int>;
+pub extern fn load_bracket_alloc()                                      <string>;
+
+pub extern fn make_iso_utc_now_alloc()                                  <string>;
+
+pub extern fn send_response(int client_fd, string body_json)            <int>;
