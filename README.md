@@ -1,6 +1,6 @@
 # agesignald
 ### Made by a 16 year old btw 💀 
-### I am utilizing the Bhumi compiler and build system that I designed at
+I am utilizing the Bhumi compiler and build system that I designed at
 ```
 https://github.com/MikaSukie/Bhumi
 ```
