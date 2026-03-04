@@ -2,6 +2,6 @@
 clear
   python build.py
 time bash -c '
-  ./main
+  ./agesignald
   echo "Exit code: $?"
 '
