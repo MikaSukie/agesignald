@@ -40,7 +40,7 @@ rm ~/.local/share/age-signal/age_bracket
 
 ## Health checking (GET /health) :
 ```bash
-curl http://127.0.0.1:8080/health
+curl "http://127.0.0.1:8080/health"
 ```
 
 ## To set an age (GET /set_age) :
@@ -50,7 +50,7 @@ curl "http://127.0.0.1:8080/set_age?birthdate=yyyy-mm-dd"
 
 ## To get the age signal (GET /get_age_signal) :
 ```bash
-curl "http://127.0.0.1:8080/get_age_signal?app=com.example.test"
+curl "http://127.0.0.1:8080/get_age_signal?app=com.example.foo"
 ```
 
 ## Example response would be
