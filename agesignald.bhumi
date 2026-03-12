@@ -44,7 +44,6 @@ pub fn run_server() <void> {
 
         string req = read_request_alloc(client);
         if (streq(req, "")) {
-            if (!streq(req, "")) { free_str(req); }
             close_fd(client);
             continue;
         }
@@ -52,16 +51,12 @@ pub fn run_server() <void> {
         string pathq = get_request_pathq_alloc(req);
         if (streq(pathq, "")) {
             send_response(client, "{\"error\":\"bad_request\"}");
-            if (!streq(req, "")) { free_str(req); }
-            if (!streq(pathq, "")) { free_str(pathq); }
             close_fd(client);
             continue;
         }
 
         if (streq(pathq, "/health") || streq(pathq, "/health/")) {
             send_response(client, "{\"status\":\"ok\"}");
-            if (!streq(req, "")) { free_str(req); }
-            if (!streq(pathq, "")) { free_str(pathq); }
             close_fd(client);
             continue;
         }
@@ -70,9 +65,6 @@ pub fn run_server() <void> {
             string birth = get_query_param_alloc(req, "birthdate");
             if (streq(birth, "")) {
                 send_response(client, "{\"error\":\"missing_birthdate\"}");
-                if (!streq(req, "")) { free_str(req); }
-                if (!streq(pathq, "")) { free_str(pathq); }
-                if (!streq(birth, "")) { free_str(birth); }
                 close_fd(client);
                 continue;
             }
@@ -80,20 +72,12 @@ pub fn run_server() <void> {
             string bracket = compute_age_bracket_alloc(birth);
             if (streq(bracket, "")) {
                 send_response(client, "{\"error\":\"bad_birthdate\"}");
-                if (!streq(req, "")) { free_str(req); }
-                if (!streq(pathq, "")) { free_str(pathq); }
-                if (!streq(birth, "")) { free_str(birth); }
-                if (!streq(bracket, "")) { free_str(bracket); }
                 close_fd(client);
                 continue;
             }
 
             if (save_bracket_c(bracket) != 0) {
                 send_response(client, "{\"error\":\"save_failed\"}");
-                if (!streq(req, "")) { free_str(req); }
-                if (!streq(pathq, "")) { free_str(pathq); }
-                if (!streq(birth, "")) { free_str(birth); }
-                if (!streq(bracket, "")) { free_str(bracket); }
                 close_fd(client);
                 continue;
             }
@@ -101,13 +85,6 @@ pub fn run_server() <void> {
             string issued = make_iso_utc_now_alloc();
             string resp = json_status_ok_with_bracket(bracket, issued);
             send_response(client, resp);
-
-            if (!streq(req, "")) { free_str(req); }
-            if (!streq(pathq, "")) { free_str(pathq); }
-            if (!streq(birth, "")) { free_str(birth); }
-            if (!streq(bracket, "")) { free_str(bracket); }
-            if (!streq(issued, "")) { free_str(issued); }
-
             close_fd(client);
             continue;
         }
@@ -124,10 +101,6 @@ pub fn run_server() <void> {
             string bracket = load_bracket_alloc();
             if (streq(bracket, "")) {
                 send_response(client, "{\"error\":\"no_age_set\"}");
-                if (!streq(req, "")) { free_str(req); }
-                if (!streq(pathq, "")) { free_str(pathq); }
-                if (!streq(app, "")) { free_str(app); }
-                if (!streq(bracket, "")) { free_str(bracket); }
                 close_fd(client);
                 continue;
             }
@@ -135,20 +108,11 @@ pub fn run_server() <void> {
             string issued = make_iso_utc_now_alloc();
             string resp = json_signal(bracket, issued, scope);
             send_response(client, resp);
-
-            if (!streq(req, "")) { free_str(req); }
-            if (!streq(pathq, "")) { free_str(pathq); }
-            if (!streq(app, "")) { free_str(app); }
-            if (!streq(bracket, "")) { free_str(bracket); }
-            if (!streq(issued, "")) { free_str(issued); }
-
             close_fd(client);
             continue;
         }
 
         send_response(client, "{\"error\":\"not_found\"}");
-        if (!streq(req, "")) { free_str(req); }
-        if (!streq(pathq, "")) { free_str(pathq); }
         close_fd(client);
     }
 }
